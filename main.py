@@ -1,15 +1,11 @@
 # coding:utf-8
-from pprint import pprint
-import ConfigParser
+from models import PwmSiteModel, InvestmentTrustsDataModel
 
-#初期化
-#設定読み込み
-
-import PwmSiteModel
+#Pwm証券からデータを取得
 site_model = PwmSiteModel.PwmSiteModel()
 site_model.execute_load_data_from_web()
 
-import InvestmentTrustsDataModel
+#取得したデータを保存
 trust_model = InvestmentTrustsDataModel.InvestmentTrustsDataModel()
 trust_model.data1 = site_model.data1
 trust_model.data2 = site_model.data2
