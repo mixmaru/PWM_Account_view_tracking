@@ -21,6 +21,14 @@ class PwmSiteModel:
         self.残高合計_受渡基準 = None
         self.残高合計_約低基準 = None
 
+        self.世界債券_除日本 = None
+        self.国内大型株式 = None
+        self.米国株式 = None
+        self.新興国_分散型_株式 = None
+        self.欧州株式 = None
+        self.新興国債券 = None
+        self.不動産投資信託_REAT = None
+
     def execute_load_data(self):
         try:
             driver = self.__driver
@@ -45,9 +53,17 @@ class PwmSiteModel:
             self.残高合計_受渡基準 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[5]/td[4]').text.replace(',', ''))
             self.残高合計_約低基準 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[6]/td[4]').text.replace(',', ''))
 
-            #ページ遷移
+            #ポートフォリオページ遷移
+            driver.find_element_by_id('_rnvgk').click()
 
             #世界債券（除日本）、国内大型株式、米国株式、新興国（分散型）株式、欧州株式、新興国債券、不動産投資信託（REAT）のパーセンテージ取得
+            self.世界債券_除日本 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[1]/td[2]').text.replace('%', ''))
+            self.国内大型株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[2]/td[2]').text.replace('%', ''))
+            self.米国株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[3]/td[2]').text.replace('%', ''))
+            self.新興国_分散型_株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[4]/td[2]').text.replace('%', ''))
+            self.欧州株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[5]/td[2]').text.replace('%', ''))
+            self.新興国債券 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[6]/td[2]').text.replace('%', ''))
+            self.不動産投資信託_REAT = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[7]/td[2]').text.replace('%', ''))
 
         finally:
             driver.quit()
