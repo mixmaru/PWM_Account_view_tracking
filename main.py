@@ -2,7 +2,9 @@
 from models import PwmSiteModel, InvestmentTrustsDataModel
 import logging
 import traceback
+import os
 
+#ロガー設定
 logging.basicConfig(
     #level=getattr(logging, 'DEBUG'),
     level=logging.INFO,
@@ -11,6 +13,15 @@ logging.basicConfig(
     filename='./logs/execute.log'
 )
 _logger = logging.getLogger(__name__)
+
+#ディレクトリパス
+"""
+#こんな風に定数を定義して使いたかったが、別ファイルからこの変数にアクセスできないので断念
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
+DATA_DIT = ROOT_DIR + 'data/'
+LOGS_DIR = ROOT_DIR + 'logs/'
+MODELS_DIR = ROOT_DIR + 'models/'
+"""
 
 try:
     #Pwm証券からデータを取得
