@@ -45,27 +45,30 @@ class PwmSiteModel:
 
             self.データ取得日時 = datetime.now()
 
+            # 起点テーブル
+            target_table_el = driver.find_element_by_xpath('//form[@action="/AccountView/Main/aw"]/div[1]/table/tbody')
             # お預かり合計、当日入金、金銭・MRF残高、残高合計（受渡基準）、残高合計（約低基準）取得
-            基準日str = driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[1]/td').text
+            基準日str = target_table_el.find_element_by_xpath('.//tr[1]/td/h3').text
             基準日str = 基準日str.replace('基準日: ', '')
             self.基準日 = datetime.strptime(基準日str, '%Y/%m/%d').date()
-            self.お預かり合計 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[2]/td[4]').text.replace(',', ''))
-            self.当日入金 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[3]/td[4]').text.replace(',', ''))
-            self.金銭_MRF残高 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[4]/td[4]').text.replace(',', ''))
-            self.残高合計_受渡基準 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[5]/td[4]').text.replace(',', ''))
-            self.残高合計_約低基準 = int(driver.find_element_by_xpath('//*[@id="_lkhqec"]/table/tbody/tr[6]/td[4]').text.replace(',', ''))
+            self.お預かり合計 = int(target_table_el.find_element_by_xpath('.//tr[2]/td[4]').text.replace(',', ''))
+            self.当日入金 = int(target_table_el.find_element_by_xpath('.//tr[3]/td[4]').text.replace(',', ''))
+            self.金銭_MRF残高 = int(target_table_el.find_element_by_xpath('.//tr[4]/td[4]').text.replace(',', ''))
+            self.残高合計_受渡基準 = int(target_table_el.find_element_by_xpath('.//tr[5]/td[4]').text.replace(',', ''))
+            self.残高合計_約低基準 = int(target_table_el.find_element_by_xpath('.//tr[6]/td[4]').text.replace(',', ''))
 
             # ポートフォリオページ遷移
             driver.find_element_by_id('_rnvgk').click()
 
             # 世界債券（除日本）、国内大型株式、米国株式、新興国（分散型）株式、欧州株式、新興国債券、不動産投資信託（REAT）のパーセンテージ取得
-            self.世界債券_除日本 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[1]/td[2]').text.replace('%', ''))
-            self.国内大型株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[2]/td[2]').text.replace('%', ''))
-            self.米国株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[3]/td[2]').text.replace('%', ''))
-            self.新興国_分散型_株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[4]/td[2]').text.replace('%', ''))
-            self.欧州株式 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[5]/td[2]').text.replace('%', ''))
-            self.新興国債券 = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[6]/td[2]').text.replace('%', ''))
-            self.不動産投資信託_REAT = float(driver.find_element_by_xpath('//*[@id="_azzo4d"]/table[2]/tbody/tr[7]/td[2]').text.replace('%', ''))
+            target_table_el = driver.find_element_by_xpath('//div[@class="tabPanel"][1]/table/tbody/tr[3]/td/div/table[1]/tbody/tr[2]/td[3]/div/table[2]/tbody')
+            self.世界債券_除日本 = float(target_table_el.find_element_by_xpath('.//tr[1]/td[2]').text.replace('%', ''))
+            self.国内大型株式 = float(target_table_el.find_element_by_xpath('.//tr[2]/td[2]').text.replace('%', ''))
+            self.米国株式 = float(target_table_el.find_element_by_xpath('.//tr[3]/td[2]').text.replace('%', ''))
+            self.新興国_分散型_株式 = float(target_table_el.find_element_by_xpath('.//tr[4]/td[2]').text.replace('%', ''))
+            self.欧州株式 = float(target_table_el.find_element_by_xpath('.//tr[5]/td[2]').text.replace('%', ''))
+            self.新興国債券 = float(target_table_el.find_element_by_xpath('.//tr[6]/td[2]').text.replace('%', ''))
+            self.不動産投資信託_REAT = float(target_table_el.find_element_by_xpath('.//tr[7]/td[2]').text.replace('%', ''))
 
         finally:
             driver.quit()
