@@ -46,7 +46,6 @@ class InvestmentTrustsDataModel:
         return ["データ取得日時", "基準日", "お預かり合計", "当日入金", "金銭_MRF残高", "残高合計_受渡基準", "残高合計_約低基準",
                 "世界債券_除日本", "国内大型株式", "米国株式", "新興国_分散型_株式", "欧州株式", "新興国債券", "不動産投資信託_REAT"]
 
-    @classmethod
-    def __get_data_list_for_csv(cls):
-        return [cls.データ取得日時, cls.基準日, cls.お預かり合計, cls.当日入金, cls.金銭_MRF残高, cls.残高合計_受渡基準, cls.残高合計_約低基準,
-                cls.世界債券_除日本, cls.国内大型株式, cls.米国株式, cls.新興国_分散型_株式, cls.欧州株式, cls.新興国債券, cls.不動産投資信託_REAT]
+    def __get_data_list_for_csv(self):
+        return [self.データ取得日時, self.基準日, self.お預かり合計, self.当日入金, self.金銭_MRF残高, self.残高合計_受渡基準, self.残高合計_約低基準,
+                self.世界債券_除日本, self.国内大型株式, self.米国株式, self.新興国_分散型_株式, self.欧州株式, self.新興国債券, self.不動産投資信託_REAT]
