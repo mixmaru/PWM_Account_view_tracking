@@ -1,36 +1,26 @@
 # coding:utf-8
-from models import PwmSiteModel, InvestmentTrustsDataModel
+from models import PwmSiteModel, InvestmentTrustsDataModel, ConfigModel
 import logging
 import traceback
-import os
-
-#ロガー設定
-logging.basicConfig(
-    #level=getattr(logging, 'DEBUG'),
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(module)s | %(message)s',
-    datefmt='%Y/%m/%d %H:%M:%S',
-    filename='./logs/execute.log'
-)
-_logger = logging.getLogger(__name__)
-
-#ディレクトリパス
-"""
-#こんな風に定数を定義して使いたかったが、別ファイルからこの変数にアクセスできないので断念
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
-DATA_DIT = ROOT_DIR + 'data/'
-LOGS_DIR = ROOT_DIR + 'logs/'
-MODELS_DIR = ROOT_DIR + 'models/'
-"""
 
 try:
-    #Pwm証券からデータを取得
+    # ロガー設定
+    logging.basicConfig(
+        # level=getattr(logging, 'DEBUG'),
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(module)s | %(message)s',
+        datefmt='%Y/%m/%d %H:%M:%S',
+        filename=ConfigModel.ConfigModel.LOGS_DIR + 'execute.log'
+    )
+    _logger = logging.getLogger(__name__)
+
+    # Pwm証券からデータを取得
     _logger.info('データ取得開始')
     Pwm = PwmSiteModel.PwmSiteModel()
     Pwm.execute_load_data()
     _logger.info('データ取得完了')
 
-    #取得したデータを保存
+    # 取得したデータを保存
     _logger.info('データ保存開始')
     trust_model = InvestmentTrustsDataModel.InvestmentTrustsDataModel()
     trust_model.データ取得日時 = Pwm.データ取得日時
