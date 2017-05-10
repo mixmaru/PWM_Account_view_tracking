@@ -13,7 +13,7 @@ class PwmSiteModel:
 
     """Pwm日本証券のサイトにログインして、必要なデータを取得する"""
     def __init__(self):
-        self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
+        self.__driver = webdriver.PhantomJS()
 
         self.データ取得日時 = None
         self.基準日 = None
