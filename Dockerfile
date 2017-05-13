@@ -18,6 +18,8 @@ RUN yum -y update && yum -y groupinstall 'Development tools' && \
 RUN yum -y install epel-release
 RUN rpm -ivh http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm
 RUN yum -y install phantomjs
+#cronのインストール https://www.server-world.info/query?os=CentOS_7&p=initial_conf&f=9
+RUN yum -y install cronie-noanacron && yum -y remove cronie-anacron
 #locale設定
 # 参考 http://qiita.com/suin/items/856bf782d0d295352e51
 # 参考 http://qiita.com/yuki2006/items/6cea8c352e38f047b52a#comment-8e863c71962008035d0d
@@ -43,6 +45,8 @@ WORKDIR /root/
 RUN pyenv local 3.6.1
 RUN pip install selenium
 
+#crontabの設定
+RUN echo "*/1 * * * * cd /root/app/; /root/.pyenv/shims/python main.py phantomjs" >> /var/spool/cron/root
 
 #nodejsのインストールとphantomjsのインストール
 #RUN curl -L git.io/nodebrew | perl - setup
