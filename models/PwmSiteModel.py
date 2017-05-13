@@ -2,6 +2,7 @@
 from models import ConfigModel
 from datetime import datetime
 from selenium import webdriver
+import selenium.common.exceptions
 
 
 class PwmSiteModel:
@@ -64,6 +65,7 @@ class PwmSiteModel:
             self.残高合計_受渡基準 = int(target_table_el.find_element_by_xpath('.//tr[5]/td[4]').text.replace(',', ''))
             self.残高合計_約低基準 = int(target_table_el.find_element_by_xpath('.//tr[6]/td[4]').text.replace(',', ''))
 
+            """ なぜかphantomjsではページ遷移されない。一旦取得をやめる
             # ポートフォリオページ遷移
             driver.find_element_by_id('_rnvgk').click()
 
@@ -76,7 +78,11 @@ class PwmSiteModel:
             self.欧州株式 = float(target_table_el.find_element_by_xpath('.//tr[5]/td[2]').text.replace('%', ''))
             self.新興国債券 = float(target_table_el.find_element_by_xpath('.//tr[6]/td[2]').text.replace('%', ''))
             self.不動産投資信託_REAT = float(target_table_el.find_element_by_xpath('.//tr[7]/td[2]').text.replace('%', ''))
-
+            """
+        except selenium.common.exceptions.NoSuchElementException as e:
+            driver.save_screenshot('error.png')
+            # DOM出力
+            raise selenium.common.exceptions.NoSuchElementException(driver.find_element_by_css_selector('body').get_attribute("innerHTML"))
         finally:
             driver.quit()
 
