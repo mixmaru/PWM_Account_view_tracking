@@ -2,6 +2,7 @@
 from models import PwmSiteModel, InvestmentTrustsDataModel, ConfigModel
 import logging
 import traceback
+import sys
 
 try:
     # ロガー設定
@@ -14,9 +15,22 @@ try:
     )
     _logger = logging.getLogger(__name__)
 
+    # 引数チェック
+    if len(sys.argv) < 2:
+        raise Exception("第一引数にブラウザを指定してくだしあ")
+
+    # どのブラウザが指定されたか
+    browser_name = sys.argv[1]
+    if sys.argv[1] == "chrome":
+        browser_type = PwmSiteModel.PwmSiteModel.BROWSER_CHROME
+    elif sys.argv[1] == "phantomjs":
+        browser_type = PwmSiteModel.PwmSiteModel.BROWSER_PHANTOMJS
+    else:
+        raise Exception("第一引数が正しくありません")
+
     # Pwm証券からデータを取得
     _logger.info('データ取得開始')
-    Pwm = PwmSiteModel.PwmSiteModel(PwmSiteModel.PwmSiteModel.BROWSER_PHANTOMJS)
+    Pwm = PwmSiteModel.PwmSiteModel(browser_type)
     Pwm.execute_load_data()
     _logger.info('データ取得完了')
 
