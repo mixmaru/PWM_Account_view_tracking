@@ -6,14 +6,21 @@ from selenium import webdriver
 
 class PwmSiteModel:
 
+    BROWSER_CHROME = "chrome"
+    BROWSER_PHANTOMJS = "phantomjs"
     __ENDPOINT_URL = 'https://ifatools.pwm.co.jp/AccountView/Main/aw?awh=r&awssk=&dard=1#b0'
     __CHROME_DRIVER_FILE = ConfigModel.ConfigModel.ROOT_DIR + 'chromedriver'
     __USER_EMAIL = ConfigModel.ConfigModel.get_user_email()
     __PASSWORD = ConfigModel.ConfigModel.get_password()
 
     """Pwm日本証券のサイトにログインして、必要なデータを取得する"""
-    def __init__(self):
-        self.__driver = webdriver.PhantomJS()
+    def __init__(self, browser_name):
+        if browser_name == self.BROWSER_CHROME:
+            self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
+        elif browser_name == self.BROWSER_PHANTOMJS:
+            self.__driver = webdriver.PhantomJS()
+        else:
+            raise Exception("不明なブラウザが指定されました")
 
         self.データ取得日時 = None
         self.基準日 = None

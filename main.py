@@ -16,7 +16,7 @@ try:
 
     # Pwm証券からデータを取得
     _logger.info('データ取得開始')
-    Pwm = PwmSiteModel.PwmSiteModel()
+    Pwm = PwmSiteModel.PwmSiteModel(PwmSiteModel.PwmSiteModel.BROWSER_PHANTOMJS)
     Pwm.execute_load_data()
     _logger.info('データ取得完了')
 
