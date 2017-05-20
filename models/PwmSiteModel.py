@@ -80,7 +80,7 @@ class PwmSiteModel:
         except selenium.common.exceptions.NoSuchElementException as e:
             driver.save_screenshot('error.png')
             # DOM出力
-            raise selenium.common.exceptions.NoSuchElementException(driver.find_element_by_css_selector('body').get_attribute("innerHTML"))
+            # raise selenium.common.exceptions.NoSuchElementException(driver.find_element_by_css_selector('body').get_attribute("innerHTML"))
         finally:
             driver.quit()
 
