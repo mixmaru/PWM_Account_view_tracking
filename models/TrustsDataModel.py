@@ -1,11 +1,11 @@
-# coding:utf-8
 from models import ConfigModel
-from datetime import datetime
 from selenium import webdriver
 import selenium.common.exceptions
+from datetime import datetime
+import os
+import csv
 
-
-class PwmSite:
+class TrustsDataModel:
 
     BROWSER_CHROME = "chrome"
     BROWSER_PHANTOMJS = "phantomjs"
@@ -14,8 +14,7 @@ class PwmSite:
     __USER_EMAIL = ConfigModel.ConfigModel.get_user_email()
     __PASSWORD = ConfigModel.ConfigModel.get_password()
 
-    """Pwm日本証券のサイトにログインして、必要なデータを取得する"""
-    def __init__(self, browser_name):
+    def __init__(self, browser_name: str):
         if browser_name == self.BROWSER_CHROME:
             self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
         elif browser_name == self.BROWSER_PHANTOMJS:
@@ -39,7 +38,7 @@ class PwmSite:
         self.新興国債券 = None
         self.不動産投資信託_REAT = None
 
-    def execute_load_data(self):
+    def loadData(self):
         try:
             driver = self.__driver
             driver.implicitly_wait(30)
@@ -84,4 +83,26 @@ class PwmSite:
         finally:
             driver.quit()
 
+    def writeOutLog(self, csv_file_path: str):
+        if os.path.exists(csv_file_path) is False:
+            # csvファイルを作成する(header記入)
+            self.__create_csv_file(csv_file_path)
 
+        # データを追記
+        with open(csv_file_path, 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow(self.__get_data_list_for_csv())
+
+    def __create_csv_file(self, csv_file_path: str):
+        with open(csv_file_path, 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow(self.__get_csv_header_list())
+
+    @staticmethod
+    def __get_csv_header_list():
+        return ["データ取得日時", "基準日", "お預かり合計", "当日入金", "金銭_MRF残高", "残高合計_受渡基準", "残高合計_約低基準",
+                "世界債券_除日本", "国内大型株式", "米国株式", "新興国_分散型_株式", "欧州株式", "新興国債券", "不動産投資信託_REAT"]
+
+    def __get_data_list_for_csv(self):
+        return [self.データ取得日時, self.基準日, self.お預かり合計, self.当日入金, self.金銭_MRF残高, self.残高合計_受渡基準, self.残高合計_約低基準,
+                self.世界債券_除日本, self.国内大型株式, self.米国株式, self.新興国_分散型_株式, self.欧州株式, self.新興国債券, self.不動産投資信託_REAT]
