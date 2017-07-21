@@ -5,7 +5,7 @@ from selenium import webdriver
 import selenium.common.exceptions
 
 
-class PwmSiteModel:
+class PwmSite:
 
     BROWSER_CHROME = "chrome"
     BROWSER_PHANTOMJS = "phantomjs"
