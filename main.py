@@ -1,8 +1,9 @@
 # coding:utf-8
-from models import PwmSiteModel, InvestmentTrustsDataModel, ConfigModel
 import logging
-import traceback
 import sys
+import traceback
+
+from models import TrustsDataModel, ConfigModel
 
 try:
     # ロガー設定
@@ -22,36 +23,16 @@ try:
     # どのブラウザが指定されたか
     browser_name = sys.argv[1]
     if sys.argv[1] == "chrome":
-        browser_type = PwmSiteModel.PwmSiteModel.BROWSER_CHROME
+        browser_type = TrustsDataModel.TrustsDataModel.BROWSER_CHROME
     elif sys.argv[1] == "phantomjs":
-        browser_type = PwmSiteModel.PwmSiteModel.BROWSER_PHANTOMJS
+        browser_type = TrustsDataModel.TrustsDataModel.BROWSER_PHANTOMJS
     else:
         raise Exception("第一引数が正しくありません")
 
-    # Pwm証券からデータを取得
-    _logger.info('データ取得開始')
-    Pwm = PwmSiteModel.PwmSiteModel(browser_type)
-    Pwm.execute_load_data()
-    _logger.info('データ取得完了')
-
-    # 取得したデータを保存
     _logger.info('データ保存開始')
-    trust_model = InvestmentTrustsDataModel.InvestmentTrustsDataModel()
-    trust_model.データ取得日時 = Pwm.データ取得日時
-    trust_model.基準日 = Pwm.基準日
-    trust_model.お預かり合計 = Pwm.お預かり合計
-    trust_model.当日入金 = Pwm.当日入金
-    trust_model.金銭_MRF残高 = Pwm.金銭_MRF残高
-    trust_model.残高合計_約低基準 = Pwm.残高合計_約低基準
-    trust_model.残高合計_受渡基準 = Pwm.残高合計_受渡基準
-    trust_model.世界債券_除日本 = Pwm.世界債券_除日本
-    trust_model.国内大型株式 = Pwm.国内大型株式
-    trust_model.米国株式 = Pwm.米国株式
-    trust_model.新興国_分散型_株式 = Pwm.新興国_分散型_株式
-    trust_model.欧州株式 = Pwm.欧州株式
-    trust_model.新興国債券 = Pwm.新興国債券
-    trust_model.不動産投資信託_REAT = Pwm.不動産投資信託_REAT
-    trust_model.save()
+    trustsData = TrustsDataModel.TrustsDataModel(browser_type)
+    trustsData.loadData()
+    trustsData.writeOutLog(ConfigModel.ConfigModel.DATA_DIR + 'data.csv')
     _logger.info('データ保存完了')
 except Exception:
     _logger.error(traceback.format_exc())
