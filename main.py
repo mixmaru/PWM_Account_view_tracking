@@ -14,7 +14,6 @@ try:
         datefmt='%Y/%m/%d %H:%M:%S',
         filename=ConfigModel.ConfigModel.LOGS_DIR + 'execute.log'
     )
-    _logger = logging.getLogger(__name__)
 
     # 引数チェック
     if len(sys.argv) < 2:
@@ -29,12 +28,12 @@ try:
     else:
         raise Exception("第一引数が正しくありません")
 
-    _logger.info('データ保存開始')
+    logging.info('データ保存開始')
     trustsData = TrustsDataModel.TrustsDataModel(browser_type)
     trustsData.loadData()
     trustsData.writeOutLog(ConfigModel.ConfigModel.DATA_DIR + 'data.csv')
-    _logger.info('データ保存完了')
+    logging.info('データ保存完了')
 except Exception:
-    _logger.error(traceback.format_exc())
+    logging.error(traceback.format_exc())
 
 
