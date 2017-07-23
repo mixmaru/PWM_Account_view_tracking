@@ -31,8 +31,10 @@ try:
     logging.info('データ保存開始')
     trustsData = TrustsDataModel.TrustsDataModel(browser_type)
     trustsData.loadData()
-    trustsData.writeOutLog(ConfigModel.ConfigModel.DATA_DIR + 'data.csv')
-    logging.info('データ保存完了')
+    if not trustsData.alreadyWriteOutLog():
+        trustsData.writeOutLog()
+        logging.info('データ保存完了')
+    logging.info('同日データがあるので保存しない')
 except Exception:
     logging.error(traceback.format_exc())
 

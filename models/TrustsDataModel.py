@@ -14,6 +14,7 @@ class TrustsDataModel:
     __CHROME_DRIVER_FILE = ConfigModel.ConfigModel.ROOT_DIR + 'chromedriver'
     __USER_EMAIL = ConfigModel.ConfigModel.get_user_email()
     __PASSWORD = ConfigModel.ConfigModel.get_password()
+    __DATA_FILE_PATH = ConfigModel.ConfigModel.DATA_DIR + 'data.csv'
 
     def __init__(self, browser_name: str):
         self.__initDriver(browser_name)
@@ -91,15 +92,28 @@ class TrustsDataModel:
         finally:
             self.__driver.quit()
 
-    def writeOutLog(self, csv_file_path: str):
-        if os.path.exists(csv_file_path) is False:
+    def writeOutLog(self):
+        if os.path.exists(self.__DATA_FILE_PATH) is False:
             # csvファイルを作成する(header記入)
-            self.__create_csv_file(csv_file_path)
+            self.__create_csv_file(self.__DATA_FILE_PATH)
 
         # データを追記
-        with open(csv_file_path, 'a') as f:
+        with open(self.__DATA_FILE_PATH, 'a') as f:
             writer = csv.writer(f)
             writer.writerow(self.__get_data_list_for_csv())
+
+    def alreadyWriteOutLog(self)->bool:
+        with open(self.__DATA_FILE_PATH, 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                try:
+                    csv基準日 = datetime.strptime(row[1], '%Y-%m-%d').date()
+                except ValueError as E:
+                    #パースできない場合（ヘッダ行か、不明な形式でデータが入っていた場合）は無視して次の行へ
+                    continue
+                if csv基準日 == self.基準日:
+                    return True
+            return False
 
     def __login(self):
         self.__driver.get(self.__ENDPOINT_URL)
