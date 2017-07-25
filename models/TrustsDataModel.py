@@ -10,7 +10,7 @@ class TrustsDataModel:
 
     BROWSER_CHROME = "chrome"
     BROWSER_PHANTOMJS = "phantomjs"
-    __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
+    __ENDPOINT_URL = 'https://ifatools.pwm.co.jp/AccountView/Main/aw?awh=r&awssk=&dard=1#b0'
     __CHROME_DRIVER_FILE = ConfigModel.ConfigModel.ROOT_DIR + 'chromedriver'
     __USER_EMAIL = ConfigModel.ConfigModel.get_user_email()
     __PASSWORD = ConfigModel.ConfigModel.get_password()
@@ -57,29 +57,31 @@ class TrustsDataModel:
 
             # 起点テーブル
             logging.info('データ取得1開始')
-            #target_table_el = self.__driver.find_element_by_xpath('//form[@action="/AccountView/Main/aw"]/div[1]/table/tbody')
+            target_table_el = self.__driver.find_element_by_xpath('//form[@action="/AccountView/Main/aw"]/div[1]/table/tbody')
             # お預かり合計、当日入金、金銭・MRF残高、残高合計（受渡基準）、残高合計（約低基準）取得
-            基準日str = self.__driver.find_element_by_id('pwm30310-kijun_ymd').text
+            基準日str = target_table_el.find_element_by_xpath('.//tr[1]/td/h3').text
+            基準日str = 基準日str.replace('基準日: ', '')
             self.基準日 = datetime.strptime(基準日str, '%Y/%m/%d').date()
-            self.お預かり合計 = int(self.__driver.find_element_by_id('pwm30310-azukari_sum_uke').get_property("value").replace(',', ''))
-            self.当日入金 = 0 #もうつかわれていない。csvフォーマットの為にのこしているだけ
-            self.金銭_MRF残高 = int(self.__driver.find_element_by_id('pwm30310-kinsen_mrf_sum').get_property("value").replace(',', ''))
-            self.残高合計_受渡基準 = int(self.__driver.find_element_by_id('pwm30310-zandaka_sum_uke').get_property("value").replace(',', ''))
-            self.残高合計_約低基準 = int(self.__driver.find_element_by_id('pwm30310-zandaka_sum_yak').get_property("value").replace(',', ''))
+            self.お預かり合計 = int(target_table_el.find_element_by_xpath('.//tr[2]/td[4]').text.replace(',', ''))
+            self.当日入金 = int(target_table_el.find_element_by_xpath('.//tr[3]/td[4]').text.replace(',', ''))
+            self.金銭_MRF残高 = int(target_table_el.find_element_by_xpath('.//tr[4]/td[4]').text.replace(',', ''))
+            self.残高合計_受渡基準 = int(target_table_el.find_element_by_xpath('.//tr[5]/td[4]').text.replace(',', ''))
+            self.残高合計_約低基準 = int(target_table_el.find_element_by_xpath('.//tr[6]/td[4]').text.replace(',', ''))
             logging.info('データ取得1完了')
 
             logging.info('データ取得2開始')
             # ポートフォリオページ遷移
-            self.__driver.find_element_by_id('pwm30310-btnportfolio').click()
+            self.__driver.find_element_by_id('_rnvgk').click()
 
             # 世界債券（除日本）、国内大型株式、米国株式、新興国（分散型）株式、欧州株式、新興国債券、不動産投資信託（REAT）のパーセンテージ取得
-            self.世界債券_除日本 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-0').text.replace('%', ''))
-            self.国内大型株式 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-1').text.replace('%', ''))
-            self.米国株式 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-2').text.replace('%', ''))
-            self.新興国_分散型_株式 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-3').text.replace('%', ''))
-            self.欧州株式 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-4').text.replace('%', ''))
-            self.新興国債券 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-5').text.replace('%', ''))
-            self.不動産投資信託_REAT = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-6').text.replace('%', ''))
+            target_table_el = self.__driver.find_element_by_xpath('//div[@class="tabPanel"][1]/table/tbody/tr[3]/td/div/table[1]/tbody/tr[2]/td[3]/div/table[2]/tbody')
+            self.世界債券_除日本 = float(target_table_el.find_element_by_xpath('.//tr[1]/td[2]').text.replace('%', ''))
+            self.国内大型株式 = float(target_table_el.find_element_by_xpath('.//tr[2]/td[2]').text.replace('%', ''))
+            self.米国株式 = float(target_table_el.find_element_by_xpath('.//tr[3]/td[2]').text.replace('%', ''))
+            self.新興国_分散型_株式 = float(target_table_el.find_element_by_xpath('.//tr[4]/td[2]').text.replace('%', ''))
+            self.欧州株式 = float(target_table_el.find_element_by_xpath('.//tr[5]/td[2]').text.replace('%', ''))
+            self.新興国債券 = float(target_table_el.find_element_by_xpath('.//tr[6]/td[2]').text.replace('%', ''))
+            self.不動産投資信託_REAT = float(target_table_el.find_element_by_xpath('.//tr[7]/td[2]').text.replace('%', ''))
             logging.info('データ取得2完了')
         except selenium.common.exceptions.NoSuchElementException as e:
             self.__driver.save_screenshot('error.png')
@@ -115,9 +117,10 @@ class TrustsDataModel:
 
     def __login(self):
         self.__driver.get(self.__ENDPOINT_URL)
-        self.__driver.find_element_by_id('pwm30100-mail_address').send_keys(self.__USER_EMAIL)
-        self.__driver.find_element_by_id('pwm30100-password').send_keys(self.__PASSWORD)
-        self.__driver.find_element_by_id('pwm30100-btndef').click()
+        self.__driver.find_element_by_link_text('すでにログイン用のメールアドレスをお持ちの方はここをクリックしてログインしてください').click()
+        self.__driver.find_element_by_id('_bbni9').send_keys(self.__USER_EMAIL)
+        self.__driver.find_element_by_id('_g8y9pb').find_element_by_tag_name("input").send_keys(self.__PASSWORD)
+        self.__driver.find_element_by_id('_wltu3').find_element_by_css_selector('.rbBC.rbBFC.rbB').click()
 
     def __create_csv_file(self, csv_file_path: str):
         with open(csv_file_path, 'a') as f:
