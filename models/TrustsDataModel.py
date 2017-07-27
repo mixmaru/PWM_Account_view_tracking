@@ -86,7 +86,7 @@ class TrustsDataModel:
             logging.warning('データ取得に失敗があった')
             logging.warning(e.msg)
             # DOM出力
-            #logging.warning(self.__driver.find_element_by_css_selector('body').get_attribute("innerHTML"))
+            logging.warning(self.__driver.find_element_by_css_selector('body').get_attribute("innerHTML"))
         finally:
             self.__driver.quit()
 
