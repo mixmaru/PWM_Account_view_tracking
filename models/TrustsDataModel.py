@@ -114,9 +114,13 @@ class TrustsDataModel:
             return False
 
     def __login(self):
+        #phantomjsの場合パスワードの流し込みによくわからない挙動があり、頭に不要な1文字を追加して流し込む必要がある
+        password = self.__PASSWORD
+        if self.__driver.name == "phantomjs":
+            password = "6" + password
         self.__driver.get(self.__ENDPOINT_URL)
         self.__driver.find_element_by_id('pwm30100-mail_address').send_keys(self.__USER_EMAIL)
-        self.__driver.find_element_by_id('pwm30100-password').send_keys(self.__PASSWORD)
+        self.__driver.find_element_by_id('pwm30100-password').send_keys(password)
         self.__driver.find_element_by_id('pwm30100-btndef').click()
 
     def __create_csv_file(self, csv_file_path: str):
