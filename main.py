@@ -34,7 +34,8 @@ try:
     if not trustsData.alreadyWriteOutLog():
         trustsData.writeOutLog()
         logging.info('データ保存完了')
-    logging.info('同日データがあるので保存しない')
+    else:
+        logging.info('同日データがあるので保存しない')
 except Exception:
     logging.error(traceback.format_exc())
 
