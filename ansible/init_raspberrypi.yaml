@@ -1,0 +1,45 @@
+#raspberrypiを初期化してwifiセッティングして、sshログインユーザー作成する
+- hosts: raspberrypi
+  remote_user: root
+  gather_facts: no
+  tasks:
+    #初期update
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+
+    #初期設定
+    - name: Locale Settings
+      locale_gen: name=ja_JP.UTF-8 state=present
+    - name: Locale file setting
+      copy: src=files/locale dest=/etc/default/
+
+    - name: TimeZone setting Tokyo
+      command: /bin/cp /usr/share/zoneinfo/Japan /etc/localtime
+    - name: reload ntp
+      service: name=ntp state=restarted
+
+    - name: wifi setting
+      template: src=files/wpa_supplicant.conf dest=/etc/wpa_supplicant/wpa_supplicant.conf
+
+    #ユーザー追加・削除
+    - name: pwm user add
+      user: name={{ pwm_user_name }} password={{ pwm_user_pass }} group=sudo
+    - name: make ssh dir
+      file: path=/home/{{ pwm_user_name }}/.ssh state=directory
+    - name: ssh-key join
+      template: src=files/authorized_keys dest=/home/{{ pwm_user_name }}/.ssh/authorized_keys
+
+    - name: pi user delete
+      user: name=pi state=absent
+
+      #sshセキュリティ設定
+    - name: ssh secure setting
+      copy: src=files/sshd_config dest=/etc/ssh/sshd_config
+
+      #reboot
+    - name: reboot
+      command: reboot

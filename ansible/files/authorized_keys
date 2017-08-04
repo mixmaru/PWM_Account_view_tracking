@@ -1,0 +1,2 @@
+{{ ssh_pub_key1 }}
+{{ ssh_pub_key2 }}
