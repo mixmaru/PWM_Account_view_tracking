@@ -52,7 +52,7 @@
       register: pip_list
       #seleniumがインストールされていなければインストール
     - name: install selenium
-      shell: /home/{{ pwm_user_name }}/.pyenv/shims/pip intall selenium chdir=~/PWM_Account_view_tracking
+      shell: /home/{{ pwm_user_name }}/.pyenv/shims/pip install selenium chdir=~/PWM_Account_view_tracking
       when: pip_list.stdout.find("selenium") == -1
 
     #phantomjs install
@@ -69,7 +69,6 @@
     - name: required intall
       apt: name=fontconfig state=present
       sudo: yes
-      when: phantomjs_stat.stat.exists == False
 
     # cron setting
     - name: cron setting
