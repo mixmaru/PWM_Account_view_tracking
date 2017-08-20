@@ -1,0 +1,76 @@
+#PWMスクリプトと、必要なプログラムをインストールして、cronで定期時刻する
+- hosts: raspberrypi
+  remote_user: "{{ pwm_user_name }}"
+  gather_facts: no
+  tasks:
+    - name: git install
+      apt: name=git state=present
+      sudo: yes
+
+    #PWMスクリプトの用意
+    - name: PWMscript git clone
+      git: repo=https://github.com/mixmaru/PWM_Account_view_tracking.git dest=~/PWM_Account_view_tracking
+    #pwm setting
+    - name: account setting
+      template: src=files/config.ini dest=~/PWM_Account_view_tracking/config.ini
+
+    #pyenv install に必要なものをインストール
+    - name: install tools required pyenv
+      apt: name={{ item }} state=present
+      sudo: yes
+      with_items:
+       - libbz2-dev
+       - libreadline-dev
+       - libsqlite3-dev
+       - libssl-dev
+
+    #pyenvの設定
+    - name: git clone pyenv
+      git: repo=https://github.com/pyenv/pyenv.git dest=~/.pyenv version=v1.1.3
+    - name: pyenv init setting
+      copy: src=files/.bashrc dest=~/.bashrc
+      #pyenvに3.6.1がインストールされているか確認
+    - name: get pyenv versions
+      shell: /home/{{ pwm_user_name }}/.pyenv/bin/pyenv versions
+      register: pyenv_versions
+      changed_when: False
+      #pythonを3.6.1がなければインストールする。あればスキップ
+    - name: install python3.6.1 to pyenv
+      shell: /home/{{ pwm_user_name }}/.pyenv/bin/pyenv install 3.6.1
+      when: pyenv_versions.stdout.find("3.6.1") == -1
+      #PWMディレクトリのpythonのVersionを確認
+    - name: check PWM Dir's python version
+      shell: /home/{{ pwm_user_name }}/.pyenv/shims/python -V chdir=~/PWM_Account_view_tracking
+      register: PWM_dir_python_version
+      #3.6.1でなければ切り替える
+    - name: switch python version to 3.6.1
+      shell: /home/{{ pwm_user_name }}/.pyenv/bin/pyenv local 3.6.1 chdir=~/PWM_Account_view_tracking
+      when: PWM_dir_python_version.stdout.find("3.6.1") == -1
+      #seleniumがインストールされているかどうかを確認
+    - name: get pip install list
+      shell: /home/{{ pwm_user_name }}/.pyenv/shims/pip list chdir=~/PWM_Account_view_tracking
+      register: pip_list
+      #seleniumがインストールされていなければインストール
+    - name: install selenium
+      shell: /home/{{ pwm_user_name }}/.pyenv/shims/pip install selenium chdir=~/PWM_Account_view_tracking
+      when: pip_list.stdout.find("selenium") == -1
+
+    #phantomjs install
+    - name: stat phantomjs
+      stat: path=/usr/bin/phantomjs
+      register: phantomjs_stat
+    - name: git clone phantomjs
+      git: repo=https://github.com/mecrazy/phantomjs-binaries.git dest=~/phantomjs-binaries
+      when: phantomjs_stat.stat.exists == False
+    - name: cp phantomjs
+      shell: cp /home/{{ pwm_user_name }}/phantomjs-binaries/bin/phantomjs-2.1.1-linux-armhf /usr/bin/phantomjs && chmod 755 /usr/bin/phantomjs
+      sudo: yes
+      when: phantomjs_stat.stat.exists == False
+    - name: required intall
+      apt: name=fontconfig state=present
+      sudo: yes
+
+    # cron setting
+    - name: cron setting
+      cron: name="exec PWM script" minute=15 hour=22 job="cd /home/{{ pwm_user_name }}/PWM_Account_view_tracking && /home/{{ pwm_user_name }}/.pyenv/shims/python main.py phantomjs"
+

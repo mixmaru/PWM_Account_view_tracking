@@ -1,0 +1,12 @@
+pwm_user_name: pwm #この名前でuserが作成され、そのユーザーにpwmスクリプトがインストールされ実行される
+pwm_user_pass: #python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.using(rounds=5000).hash(getpass.getpass())"を実行してパスワードを入力し、出力された値をここにペーストする。参考）http://docs.ansible.com/ansible/latest/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+ssh_pub_key1: #pwm_user_nameで設定したユーザーにsshログインするuserのpublic keyをここにペーストする
+ssh_pub_key2: #同上
+
+#wifi
+ssid: #raspberrypiを接続するwifiのssidを記述
+psk: #wpa_passphrase SSID PASSPHRASE コマンドで出力されるpskの内容をペーストする
+
+#PWM account
+pwm_account_email: yout@email #pwm日本証券アカウントの登録emailアドレスを登録する
+pwm_account_pass: yourpassword #pwm日本証券アカウントの登録パスワードを入力する
