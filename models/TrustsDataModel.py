@@ -101,17 +101,21 @@ class TrustsDataModel:
             writer.writerow(self.__get_data_list_for_csv())
 
     def alreadyWriteOutLog(self)->bool:
-        with open(self.__DATA_FILE_PATH, 'r') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                try:
-                    csv基準日 = datetime.strptime(row[1], '%Y-%m-%d').date()
-                except ValueError as E:
-                    #パースできない場合（ヘッダ行か、不明な形式でデータが入っていた場合）は無視して次の行へ
-                    continue
-                if csv基準日 == self.基準日:
-                    return True
+        # ログファイル自体存在しなければfalse
+        if not os.path.exists(self.__DATA_FILE_PATH):
             return False
+        else:
+            with open(self.__DATA_FILE_PATH, 'r') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    try:
+                        csv基準日 = datetime.strptime(row[1], '%Y-%m-%d').date()
+                    except ValueError as E:
+                        #パースできない場合（ヘッダ行か、不明な形式でデータが入っていた場合）は無視して次の行へ
+                        continue
+                    if csv基準日 == self.基準日:
+                        return True
+                return False
 
     def __login(self):
         #phantomjsの場合パスワードの流し込みによくわからない挙動があり、頭に不要な1文字を追加して流し込む必要がある
