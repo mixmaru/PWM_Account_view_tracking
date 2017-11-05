@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from selenium import webdriver
 import selenium.common.exceptions
@@ -19,13 +20,13 @@ class TrackingService:
         try:
             self.__init_driver("chrome")
             data = Data()
-            """logging.info('ログイン開始')"""
+            logging.info('ログイン開始')
             self.__login(email, password)
-            """logging.info('ログイン完了')"""
+            logging.info('ログイン完了')
             data.データ取得日時 = datetime.now()
 
             # 起点テーブル
-            """logging.info('データ取得1開始')"""
+            logging.info('データ取得1開始')
             # target_table_el = self.__driver.find_element_by_xpath('//form[@action="/AccountView/Main/aw"]/div[1]/table/tbody')
             # お預かり合計、当日入金、金銭・MRF残高、残高合計（受渡基準）、残高合計（約低基準）取得
             基準日str = self.__driver.find_element_by_id('pwm30310-kijun_ymd').text
@@ -39,9 +40,9 @@ class TrackingService:
                 self.__driver.find_element_by_id('pwm30310-zandaka_sum_uke').get_property("value").replace(',', ''))
             data.残高合計_約低基準 = int(
                 self.__driver.find_element_by_id('pwm30310-zandaka_sum_yak').get_property("value").replace(',', ''))
-            """logging.info('データ取得1完了')"""
+            logging.info('データ取得1完了')
 
-            """logging.info('データ取得2開始')"""
+            logging.info('データ取得2開始')
             # ポートフォリオページ遷移
             self.__driver.find_element_by_id('pwm30310-btnportfolio').click()
 
@@ -53,23 +54,23 @@ class TrackingService:
             data.欧州株式 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-4').text.replace('%', ''))
             data.新興国債券 = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-5').text.replace('%', ''))
             data.不動産投資信託_REAT = float(self.__driver.find_element_by_id('pwm10731-m7_hiritu-6').text.replace('%', ''))
-            """logging.info('データ取得2完了')"""
+            logging.info('データ取得2完了')
 
-            """データ保存"""
+            # データ保存
             dao = Dao(data_file_path)
             dao.save_data(data)
 
         except selenium.common.exceptions.NoSuchElementException as e:
             self.__driver.save_screenshot('error.png')
-            """logging.warning('データ取得に失敗があった')
-            logging.warning(e.msg)"""
+            logging.warning('データ取得に失敗があった')
+            logging.warning(e.msg)
             # DOM出力
-            """logging.warning(self.__driver.find_element_by_css_selector('body').get_attribute("innerHTML"))"""
+            logging.warning(self.__driver.find_element_by_css_selector('body').get_attribute("innerHTML"))
         finally:
             self.__driver.quit()
 
     def __init_driver(self, browser_name: str)->None:
-        """logging.info('__initDriver開始')"""
+        logging.info('__initDriver開始')
         if browser_name == self.BROWSER_CHROME:
             self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
         elif browser_name == self.BROWSER_PHANTOMJS:
@@ -77,7 +78,7 @@ class TrackingService:
         else:
             raise Exception("不明なブラウザが指定されました")
         self.__driver.implicitly_wait(30)
-        """logging.info('__initDriver完了')"""
+        logging.info('__initDriver完了')
 
     def __login(self, email: str, password: str)->None:
         # phantomjsの場合パスワードの流し込みによくわからない挙動があり、頭に不要な1文字を追加して流し込む必要がある
