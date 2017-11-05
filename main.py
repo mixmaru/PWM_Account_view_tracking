@@ -1,12 +1,8 @@
 # coding:utf-8
 import logging
-import sys
 import traceback
-
 from Biz.TrackingService import TrackingService
 import configparser
-
-from models import TrustsDataModel, ConfigModel
 
 
 def main():
