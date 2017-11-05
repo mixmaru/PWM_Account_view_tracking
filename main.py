@@ -14,7 +14,7 @@ config.read("config.ini")
 
 # 投資信託データ取得Serviceを起動する
 s = TrackingService(config['secure']['user_email'], config['secure']['password'])
-s.execute_tracking()
+s.execute_tracking('data/data.csv')
 """
 try:
 # ロガー設定

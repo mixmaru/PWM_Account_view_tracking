@@ -9,18 +9,19 @@ import os
 class TrackingService:
     BROWSER_CHROME = "chrome"
     BROWSER_PHANTOMJS = "phantomjs"
-    __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
 
-    __CHROME_DRIVER_FILE = os.path.abspath("Biz/chromedriver");
+    __EXECUTE_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+
+    __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
+    __CHROME_DRIVER_FILE = os.path.join(__EXECUTE_DIR_PATH, 'chromedriver');
     __USER_EMAIL = None
     __PASSWORD = None
-    __DATA_FILE_PATH = os.path.abspath("data/data.csv");
 
     def __init__(self, user_email, password):
         self.__USER_EMAIL = user_email
         self.__PASSWORD = password
 
-    def execute_tracking(self):
+    def execute_tracking(self, data_file_path):
         try:
             self.__init_driver("chrome")
             data = Data()
@@ -61,7 +62,7 @@ class TrackingService:
             """logging.info('データ取得2完了')"""
 
             """データ保存"""
-            dao = Dao(self.__DATA_FILE_PATH)
+            dao = Dao(data_file_path)
             dao.save_data(data)
 
         except selenium.common.exceptions.NoSuchElementException as e:
