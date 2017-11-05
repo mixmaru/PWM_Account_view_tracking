@@ -1,8 +1,8 @@
 from datetime import datetime
 from selenium import webdriver
 import selenium.common.exceptions
-from . import Data
-from . import Dao
+from Biz.Data import Data
+from Biz.Dao import Dao
 import os
 
 
@@ -11,10 +11,10 @@ class TrackingService:
     BROWSER_PHANTOMJS = "phantomjs"
     __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
 
-    __CHROME_DRIVER_FILE = os.path.abspath("./chromedriver");
+    __CHROME_DRIVER_FILE = os.path.abspath("Biz/chromedriver");
     __USER_EMAIL = None
     __PASSWORD = None
-    __DATA_FILE_PATH = os.path.abspath("../data/data.csv");
+    __DATA_FILE_PATH = os.path.abspath("data/data.csv");
 
     def __init__(self, user_email, password):
         self.__USER_EMAIL = user_email
@@ -23,7 +23,7 @@ class TrackingService:
     def execute_tracking(self):
         try:
             self.__init_driver("chrome")
-            data = Data.Data()
+            data = Data()
             """logging.info('ログイン開始')"""
             self.__login()
             """logging.info('ログイン完了')"""
@@ -61,7 +61,7 @@ class TrackingService:
             """logging.info('データ取得2完了')"""
 
             """データ保存"""
-            dao = Dao.Dao(self.__DATA_FILE_PATH)
+            dao = Dao(self.__DATA_FILE_PATH)
             dao.save_data(data)
 
         except selenium.common.exceptions.NoSuchElementException as e:
@@ -93,10 +93,3 @@ class TrackingService:
         self.__driver.find_element_by_id('pwm30100-mail_address').send_keys(self.__USER_EMAIL)
         self.__driver.find_element_by_id('pwm30100-password').send_keys(password)
         self.__driver.find_element_by_id('pwm30100-btndef').click()
-
-
-if __name__ == "__main__":
-    import sys
-    argv = sys.argv
-    s = TrackingService(sys.argv[1], sys.argv[2])
-    s.execute_tracking()
