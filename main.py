@@ -13,8 +13,8 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 # 投資信託データ取得Serviceを起動する
-s = TrackingService(config['secure']['user_email'], config['secure']['password'])
-s.execute_tracking('data/data.csv')
+s = TrackingService()
+s.execute_tracking('data/data.csv', config['secure']['user_email'], config['secure']['password'])
 """
 try:
 # ロガー設定
