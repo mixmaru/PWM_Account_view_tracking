@@ -13,9 +13,9 @@ class TrackingService:
     __EXECUTE_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
     __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
-    __CHROME_DRIVER_FILE = os.path.join(__EXECUTE_DIR_PATH, 'chromedriver');
+    __CHROME_DRIVER_FILE = os.path.join(__EXECUTE_DIR_PATH, 'chromedriver')
 
-    def execute_tracking(self, data_file_path, email, password):
+    def execute_tracking(self, data_file_path: str, email: str, password: str)->None:
         try:
             self.__init_driver("chrome")
             data = Data()
@@ -68,7 +68,7 @@ class TrackingService:
         finally:
             self.__driver.quit()
 
-    def __init_driver(self, browser_name: str):
+    def __init_driver(self, browser_name: str)->None:
         """logging.info('__initDriver開始')"""
         if browser_name == self.BROWSER_CHROME:
             self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
@@ -79,7 +79,7 @@ class TrackingService:
         self.__driver.implicitly_wait(30)
         """logging.info('__initDriver完了')"""
 
-    def __login(self, email, password):
+    def __login(self, email: str, password: str)->None:
         # phantomjsの場合パスワードの流し込みによくわからない挙動があり、頭に不要な1文字を追加して流し込む必要がある
         password = password
         if self.__driver.name == "phantomjs":
