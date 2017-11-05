@@ -1,3 +1,4 @@
+import csv
 import logging
 from datetime import datetime
 from selenium import webdriver
@@ -16,7 +17,7 @@ class TrackingService:
     __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
     __CHROME_DRIVER_FILE = os.path.join(__EXECUTE_DIR_PATH, 'chromedriver')
 
-    def execute_tracking(self, data_file_path: str, email: str, password: str)->None:
+    def execute_tracking(self, data_file_path: str, email: str, password: str) -> None:
         try:
             self.__init_driver("chrome")
             data = Data()
@@ -57,8 +58,14 @@ class TrackingService:
             logging.info('データ取得2完了')
 
             # データ保存
-            dao = Dao(data_file_path)
-            dao.save_data(data)
+            if self.__alreadyWriteOutLog(data.基準日, data_file_path):
+                # すでに同日データが存在するので保存しない
+                logging.info('同日データがあるので保存しない')
+            else:
+                # 同日データは存在しないので、保存する
+                dao = Dao(data_file_path)
+                dao.save_data(data)
+                logging.info('データ保存完了')
 
         except selenium.common.exceptions.NoSuchElementException as e:
             self.__driver.save_screenshot('error.png')
@@ -69,7 +76,7 @@ class TrackingService:
         finally:
             self.__driver.quit()
 
-    def __init_driver(self, browser_name: str)->None:
+    def __init_driver(self, browser_name: str) -> None:
         logging.info('__initDriver開始')
         if browser_name == self.BROWSER_CHROME:
             self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
@@ -80,7 +87,7 @@ class TrackingService:
         self.__driver.implicitly_wait(30)
         logging.info('__initDriver完了')
 
-    def __login(self, email: str, password: str)->None:
+    def __login(self, email: str, password: str) -> None:
         # phantomjsの場合パスワードの流し込みによくわからない挙動があり、頭に不要な1文字を追加して流し込む必要がある
         password = password
         if self.__driver.name == "phantomjs":
@@ -89,3 +96,20 @@ class TrackingService:
         self.__driver.find_element_by_id('pwm30100-mail_address').send_keys(email)
         self.__driver.find_element_by_id('pwm30100-password').send_keys(password)
         self.__driver.find_element_by_id('pwm30100-btndef').click()
+
+    def __alreadyWriteOutLog(self, 基準日: datetime, data_file_path: str) -> bool:
+        # ログファイル自体存在しなければfalse
+        if not os.path.exists(data_file_path):
+            return False
+        else:
+            with open(data_file_path, 'r') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    try:
+                        csv基準日 = datetime.strptime(row[1], '%Y-%m-%d').date()
+                    except ValueError as E:
+                        # パースできない場合（ヘッダ行か、不明な形式でデータが入っていた場合）は無視して次の行へ
+                        continue
+                    if csv基準日 == 基準日:
+                        return True
+                return False
