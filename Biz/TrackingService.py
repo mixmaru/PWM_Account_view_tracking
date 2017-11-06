@@ -6,6 +6,7 @@ import selenium.common.exceptions
 from Biz.Data import Data
 from Biz.Dao import Dao
 import os
+from Biz.BrowserEnum import Browser
 
 
 class TrackingService:
@@ -19,7 +20,7 @@ class TrackingService:
 
     def execute_tracking(self, data_file_path: str, email: str, password: str) -> None:
         try:
-            self.__init_driver("chrome")
+            self.__init_driver(Browser.CHROME)
             data = Data()
             logging.info('ログイン開始')
             self.__login(email, password)
@@ -76,11 +77,11 @@ class TrackingService:
         finally:
             self.__driver.quit()
 
-    def __init_driver(self, browser_name: str) -> None:
+    def __init_driver(self, browser: Browser) -> None:
         logging.info('__initDriver開始')
-        if browser_name == self.BROWSER_CHROME:
+        if browser == Browser.CHROME:
             self.__driver = webdriver.Chrome(self.__CHROME_DRIVER_FILE)
-        elif browser_name == self.BROWSER_PHANTOMJS:
+        elif browser == Browser.PHANTOMJS:
             self.__driver = webdriver.PhantomJS()
         else:
             raise Exception("不明なブラウザが指定されました")
