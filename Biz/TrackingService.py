@@ -18,9 +18,9 @@ class TrackingService:
     __ENDPOINT_URL = 'https://webtools.pwm.co.jp/pwmservlet/pwm301.init'
     __CHROME_DRIVER_FILE = os.path.join(__EXECUTE_DIR_PATH, 'chromedriver')
 
-    def execute_tracking(self, data_file_path: str, email: str, password: str) -> None:
+    def execute_tracking(self, data_file_path: str, email: str, password: str, browser: Browser) -> None:
         try:
-            self.__init_driver(Browser.CHROME)
+            self.__init_driver(browser)
             data = Data()
             logging.info('ログイン開始')
             self.__login(email, password)

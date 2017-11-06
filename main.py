@@ -1,11 +1,24 @@
-# coding:utf-8
+import sys
 import logging
 import traceback
 from Biz.TrackingService import TrackingService
 import configparser
+from Biz.BrowserEnum import Browser
 
 
-def main():
+def main(browser: Browser):
+        # config.iniからメールアドレスとパスワードを取得する
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+
+        # 投資信託データ取得Serviceを起動する
+        s = TrackingService()
+        logging.info('処理開始')
+        s.execute_tracking('data/data.csv', config['secure']['user_email'], config['secure']['password'], browser)
+        logging.info('処理完了')
+
+
+if __name__ == '__main__':
     try:
         # ロガー設定
         logging.basicConfig(
@@ -16,22 +29,24 @@ def main():
             filename='logs/execute.log'
         )
 
-        # config.iniからメールアドレスとパスワードを取得する
-        config = configparser.ConfigParser()
-        config.read("config.ini")
 
-        # 投資信託データ取得Serviceを起動する
-        s = TrackingService()
-        logging.info('処理開始')
-        s.execute_tracking('data/data.csv', config['secure']['user_email'], config['secure']['password'])
-        logging.info('処理完了')
+        # 引数チェック
+        if len(sys.argv) < 2:
+            raise Exception("第一引数にブラウザを指定してくだしあ")
+
+        # どのブラウザが指定されたか
+        browser_name = sys.argv[1]
+        if sys.argv[1] == "chrome":
+            browser_type = Browser.CHROME
+        elif sys.argv[1] == "phantomjs":
+            browser_type = Browser.PHANTOMJS
+        else:
+            raise Exception("第一引数が正しくありません")
+
+        main(browser_type)
 
     except Exception:
         logging.error(traceback.format_exc())
-
-
-if __name__ == '__main__':
-    main()
 
 """
 try:
