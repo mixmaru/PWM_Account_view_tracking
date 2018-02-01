@@ -89,10 +89,7 @@ class TrackingService:
         logging.info('__initDriver完了')
 
     def __login(self, email: str, password: str) -> None:
-        # phantomjsの場合パスワードの流し込みによくわからない挙動があり、頭に不要な1文字を追加して流し込む必要がある
         password = password
-        if self.__driver.name == "phantomjs":
-            password = "6" + password
         self.__driver.get(self.__ENDPOINT_URL)
         self.__driver.find_element_by_id('pwm30100-mail_address').send_keys(email)
         self.__driver.find_element_by_id('pwm30100-password').send_keys(password)
